@@ -122,7 +122,7 @@
   .bar{position:fixed;left:0;right:0;bottom:0;display:flex;z-index:50;box-shadow:0 -6px 18px rgba(0,0,0,.2)}
   .bar a{flex:1;text-align:center;padding:16px 10px;color:#fff;text-decoration:none;font-weight:700;font-size:16px;background:var(--red)}
   .bar a+a{background:var(--navy)}
-  @media(min-width:760px){.bar{max-width:420px;left:auto;right:28px;bottom:24px;border-radius:3px;overflow:hidden}}
+  @media(min-width:760px){.bar{max-width:420px;left:auto;right:28px;bottom:24px;border-radius:3px;overflow:hidden}.bar a{line-height:1.25}.bar a span{display:block}}
   /* INFO PACK */
   .pack{background:var(--soft)}
   .pack-card{background:#fff;border:1px solid var(--line);border-top:4px solid var(--navy);padding:30px 24px;max-width:620px;margin:0 auto}
@@ -350,8 +350,8 @@
 </footer>
 
 <div class="bar" role="navigation" aria-label="Quick contact">
-  <a href="tel:+14158974774">Call Pattie</a>
-  <a href="sms:+14158974774">Text Pattie</a>
+  <a href="tel:+14158974774">Call <span>Pattie</span></a>
+  <a href="sms:+14158974774">Text <span>Pattie</span></a>
 </div>
 
 <script>
