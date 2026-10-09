@@ -123,6 +123,22 @@
   .bar a{flex:1;text-align:center;padding:16px 10px;color:#fff;text-decoration:none;font-weight:700;font-size:16px;background:var(--red)}
   .bar a+a{background:var(--navy)}
   @media(min-width:760px){.bar{max-width:420px;left:auto;right:28px;bottom:24px;border-radius:3px;overflow:hidden}}
+  /* INFO PACK */
+  .pack{background:var(--soft)}
+  .pack-card{background:#fff;border:1px solid var(--line);border-top:4px solid var(--navy);padding:30px 24px;max-width:620px;margin:0 auto}
+  .pack-card ul{list-style:none;margin:14px 0 20px}
+  .pack-card li{padding:6px 0 6px 24px;position:relative}
+  .pack-card li:before{content:"";position:absolute;left:2px;top:15px;width:9px;height:9px;background:var(--red);transform:rotate(45deg)}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:14px;font-weight:700;margin-bottom:5px}
+  .field input{width:100%;font:inherit;font-size:17px;padding:12px 13px;border:1px solid #9a9a95;border-radius:3px;background:#fff;color:var(--ink)}
+  .consent{display:flex;gap:10px;align-items:flex-start;font-size:15px;color:var(--gray);margin:6px 0 14px}
+  .consent input{margin-top:4px;width:18px;height:18px;flex:none}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .pack-btn{width:100%;border:none;cursor:pointer;font:inherit;font-weight:700;font-size:17px;padding:15px;border-radius:3px;background:var(--navy);color:#fff}
+  .pstatus{margin-top:12px;font-weight:700}
+  .pstatus.err{color:#B3261E}
+  .pnote{font-size:14px;color:var(--gray);margin-top:10px}
 </style>
 </head>
 <body>
@@ -282,6 +298,31 @@
   </div>
 </section>
 
+<section class="pack" id="infopack">
+  <div class="wrap">
+    <div class="pack-card">
+      <span class="label">Serious about this home?</span>
+      <h2 style="margin-bottom:10px">Get the full info pack</h2>
+      <p>Leave your name and email and Pattie will send you:</p>
+      <ul>
+        <li>Disclosures and reports as they become available</li>
+        <li>Price updates</li>
+        <li>First pick of private tour times</li>
+      </ul>
+      <form id="pack-form" novalidate>
+        <div class="field"><label for="p-name">Your name</label><input id="p-name" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="p-email">Email</label><input id="p-email" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="p-phone">Phone (optional)</label><input id="p-phone" type="tel" autocomplete="tel"></div>
+        <label class="consent"><input id="p-sms" type="checkbox"><span>Yes, Pattie may call or text me at this number. Message and data rates may apply. Reply STOP to opt out anytime.</span></label>
+        <div class="hp" aria-hidden="true"><label for="p-bot">Leave this empty</label><input id="p-bot" type="checkbox" tabindex="-1"></div>
+        <button class="pack-btn" type="submit">Send me the info pack</button>
+        <p id="p-status" class="pstatus" role="status" aria-live="polite"></p>
+        <p class="pnote">Goes straight to Pattie. No spam. See the <a href="https://pattiep.com/privacy.html">privacy policy</a>.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
 <section id="contact">
   <div class="wrap">
     <div class="contact-card">
@@ -313,6 +354,36 @@
   <a href="sms:+14158974774">Text Pattie</a>
 </div>
 
+<script>
+(function(){
+  var f=document.getElementById('pack-form'); if(!f) return;
+  var st=document.getElementById('p-status');
+  var KEY="97fe75db-f4cf-4276-b968-a66f3e8f2db6", GHL="https://client-tools-site-nu.vercel.app/api/submit";
+  function v(id){return document.getElementById(id);}
+  f.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    if(f.dataset.busy==='1') return;
+    var name=v('p-name').value.trim(), email=v('p-email').value.trim(), phone=v('p-phone').value.trim(), consent=v('p-sms').checked;
+    st.className='pstatus';
+    if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){st.className='pstatus err';st.textContent='Please add your name and a valid email.';return;}
+    if(v('p-bot').checked) return;
+    var msg='Requested the full info pack for 494 Fourth Street East, Sonoma (MLS #326082124).';
+    try{fetch(GHL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},keepalive:true,
+      body:JSON.stringify({form_type:'website-contact',contact_name:name,contact_email:email,contact_phone:phone,
+      sms_consent:consent?'yes':'no',message:msg,page:location.href})}).catch(function(){});}catch(e){}
+    f.dataset.busy='1'; var btn=f.querySelector('button'); btn.disabled=true; btn.textContent='Sending...';
+    fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({access_key:KEY,subject:'Info pack request: 494 Fourth Street East - '+name,from_name:'494.pattiep.com',
+      name:name,email:email,phone:consent?phone:(phone?'(given, but no permission to call or text)':''),sms_consent:consent?'yes':'no',
+      message:msg,page:location.href,botcheck:false})})
+    .then(function(r){return r.json();})
+    .then(function(d){if(!d||d.success!==true) throw new Error('not sent');
+      f.innerHTML='<p class="pstatus" style="font-size:19px">Thank you. Pattie has your request and will send the info pack soon.</p>';})
+    .catch(function(){f.dataset.busy='0';btn.disabled=false;btn.textContent='Send me the info pack';st.className='pstatus err';
+      st.textContent='That did not go through. Please call or text Pattie at 415-897-4774.';});
+  });
+})();
+</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
