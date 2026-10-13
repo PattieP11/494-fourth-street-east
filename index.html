@@ -140,6 +140,18 @@
   .pstatus.err{color:#B3261E}
   .pnote{font-size:14px;color:var(--gray);margin-top:10px}
 </style>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','2252883221922065');
+fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=2252883221922065&ev=PageView&noscript=1"></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -378,6 +390,7 @@
       message:msg,page:location.href,botcheck:false})})
     .then(function(r){return r.json();})
     .then(function(d){if(!d||d.success!==true) throw new Error('not sent');
+      try{if(window.fbq)fbq('track','Lead');}catch(e){}
       f.innerHTML='<p class="pstatus" style="font-size:19px">Thank you. Pattie has your request and will send the info pack soon.</p>';})
     .catch(function(){f.dataset.busy='0';btn.disabled=false;btn.textContent='Send me the info pack';st.className='pstatus err';
       st.textContent='That did not go through. Please call or text Pattie at 415.897.4774.';});
